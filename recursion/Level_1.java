@@ -88,9 +88,148 @@ public class Level_1 {
         toh(n - 1, c, b, a);
     }
 
+    // f(arr, idx) = a[idx] + f(arr, idx + 1);
+    public static void printArr(int[] arr, int idx) {
+        if (idx >= arr.length) {
+            return;
+        }
+
+        System.out.print(arr[idx] + " ");
+        printArr(arr, idx + 1);
+    }
+
+    // display arr in reverse
+    // f(arr, idx) = f(arr, idx + 1) + a[idx]
+    public static void printArrInReverse(int[] arr, int idx) {
+        if (idx >= arr.length) return;
+        printArrInReverse(arr, idx + 1);
+        System.out.print(arr[idx] + " ");
+    }
+
+    // max of an arr
+    // f(arr, idx) = max(arr[0], f(arr, idx + 1))
+    public static int maxInArr(int[] arr, int idx) {
+        if (idx >= arr.length) {
+            return -(int)(1e8);
+        }
+        int max = maxInArr(arr, idx + 1);
+        return Math.max(max, arr[idx]);
+    }
+
+    // find first index of given element
+    // f(arr, idx) = Math.min(f(arr, idx + 1), arr[idx])
+    public static int firstOccInddex (int[] arr, int idx, int key) {
+        if (idx >= arr.length) return -1;
+        int minIdx = firstOccInddex(arr, idx + 1, key);
+
+        return (key == arr[idx] ? idx : minIdx);
+
+    }
+
+    public static int firstOccInddex_opti(int[] arr, int idx, int key) {
+        if (idx == arr.length) return -1;
+
+        return (arr[idx] == key ? idx : firstOccInddex_opti(arr, idx + 1, key));
+    }
+
+    // last occurance index
+    public static int lastOcc(int[] arr, int idx, int key) {
+        if (idx == arr.length) return -1;
+
+        int maxIdx = lastOcc(arr, idx + 1, key);
+
+        if (maxIdx == -1 && arr[idx] == key) {
+            return idx;
+        } else {
+            return maxIdx;
+        }
+    }
+
+    // all indices
+    public static int[] allIndices(int[] arr, int idx, int key, int count) {
+        if (idx == arr.length) {
+            return new int[count];
+        }
+
+        if (arr[idx] == key) {
+            int[] left = allIndices(arr, idx + 1, key, count + 1);
+            left[count] = idx;
+            return left;
+        } else {
+            int[] right = allIndices(arr, idx + 1, key, count);
+            return right;
+        }
+    }
+
+    /////////////////////////////////  ARRAYLISTS ////////////////////////////////////////////
+
+
+    // get subsequence
+    // f(abc) = (_empty + f(bc)) + (a + f(bc));
+    public static ArrayList<String> getSubsequence(String s) {
+        if (s.length() == 0) {
+            ArrayList<String> base = new ArrayList<>();
+            base.add("");
+            return base;
+        }
+
+        char left = s.charAt(0);
+        String right = s.substring(1);
+
+        // faith on bc to bring his ss
+        ArrayList<String> ans = getSubsequence(right);
+
+        ArrayList<String> curr = new ArrayList<>();
+
+        for (String str: ans) {
+            curr.add("" + str);
+        }
+
+        for (String str: ans) {
+            curr.add(left + str);
+        }
+
+        return curr;
+    }
+
+    // get keypad codes
+    static String[] combi = {".:", "abc", "def", "ghi", "jkl", "mnop", "qrst", "uv", "wxyz"};
+    public static ArrayList<String> kpc(String s) {
+        
+        if (s.length() == 0) {
+            ArrayList<String> base = new ArrayList<>();
+            base.add("");
+            return base;
+        }
+
+        ArrayList<String> left = kpc(s.substring(1));
+
+        ArrayList<String> ans = new ArrayList<>();
+        String code = combi[s.charAt(0) - '0'];
+
+        for (int i = 0; i < code.length(); i++) {
+            char chcode = code.charAt(i);
+
+            for (String l: left) {
+                ans.add(chcode + l);
+            }
+        }
+
+        return ans;
+    }
+
+
     public static void main (String[] args) {
-        // int ans = powerLog(2, 10);
+        // int arr[] = new int[]{8, 3, 9, -1, 7, 6, 8, 12, 7, 3, 8};
+        // int ans = lastOcc(arr, 0, 8);
         // System.out.print(ans);
-        toh(3, "a", "b", "c");
+        // toh(3, "a", "b", "c");/
+
+        // int[] ans = allIndices(arr, 0, 8, 0);
+        // for (int val: ans) {
+        //     System.out.print(val + " ");
+        // }
+
+        System.out.print(kpc("123"));
     }
 }
