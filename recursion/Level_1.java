@@ -218,6 +218,133 @@ public class Level_1 {
         return ans;
     }
 
+    // get stairs paths
+    // he can take [1, 2, 3] steps at a time
+    // t(1) = 1
+    // t(2) = 1 t(1) + 2 t(2) + 3 t(3)
+    public static ArrayList<String> getStaisPath(int n) {
+        if (n <= 0) {
+            ArrayList<String> baseAns = new ArrayList<>();
+            if (n == 0) {
+                // basically adding this empty string will help to execute the below code
+                baseAns.add(" ");
+                // this "" means that there is a path for particular values
+            } 
+            return baseAns;
+        }
+
+        ArrayList<String> oneStep = getStaisPath(n - 1);
+        ArrayList<String> twoSteps = getStaisPath(n - 2);
+        ArrayList<String> threeSteps = getStaisPath(n - 3);
+
+
+        ArrayList<String> ans = new ArrayList<>();
+        for (String s: oneStep) {
+            ans.add(1 + s);
+        }
+
+        for (String s: twoSteps) {
+            ans.add(2 + s);
+        }
+
+        for (String s: threeSteps) {
+            ans.add(3 + s);
+        }
+
+        return ans;
+    }
+
+    // get maza paths
+    public static ArrayList<String> mazePaths(int r, int c, int fr, int fc) {
+        if (r > fr || c > fc) {
+            // out of bounds (1, 1) to (r, c)
+            ArrayList<String> base = new ArrayList<>();
+            return base;
+        }
+
+        if (r == fr && c == fc) {
+            ArrayList<String> base = new ArrayList<>();
+            // it is a valid path
+            base.add(" ");
+            return base;
+        }
+
+        ArrayList<String> verti = mazePaths(r + 1, c, fr, fc);
+        ArrayList<String> hori = mazePaths(r, c + 1, fr, fc);
+
+        ArrayList<String> paths = new ArrayList<>();
+
+        for (String s: verti) {
+            paths.add("v" + s);
+        }
+        // path from verti and add v effort to it
+
+        for (String s: hori) {
+            paths.add("h" + s);
+        }
+        // path from hori and add h effort to it
+        return paths;
+    }
+
+    // get maze paths with jumps
+    public static ArrayList<String> mazePathsWithJumps(int r, int c, int fr, int fc) {
+
+        if (r > fr || c > fc) {
+            ArrayList<String> base = new ArrayList<>();
+            return base;
+        }
+
+        if (r == fr && c == fc) {
+            ArrayList<String> base = new ArrayList<>();
+            base.add(" ");
+            return base;
+        }
+
+        ArrayList<String> ans = new ArrayList<>();
+
+        for (int i = 1; i <= fr - r; i++) {
+            // this will prevent some calls
+            ArrayList<String> v = mazePathsWithJumps(r + i, c, fr, fc);
+            for (String s: v) {
+                ans.add("v" + i + s);
+            }
+        }
+
+        for (int j = 1; j <= fc - c; j++) {
+            // this will prevent some calls
+            ArrayList<String> h = mazePathsWithJumps(r, c + j, fr, fc);
+            for (String s: h) {
+                ans.add("h" + j + s);
+            }
+        }
+
+        for (int k = 1; (k <= fr - r && k <= fc - c); k++) {
+            ArrayList<String> d = mazePathsWithJumps(r + 1, c + 1, fr, fc);
+            for (String s: d) {
+                ans.add("d" + k + s);
+            }
+        }
+
+        return ans;
+    }
+
+    ////// PRINT ON ThE WAY OF RECURSION ///////
+
+    // print subsequence
+    public static void printSubsequence(String s, String ans) {
+        if (s.length() == 0) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+        char ch = s.charAt(0);
+        String remaing = s.substring(1);
+        // yes call
+        printSubsequence(remaing, ans + ch);
+
+        // no call
+        printSubsequence(remaing, ans);
+    }
 
     public static void main (String[] args) {
         // int arr[] = new int[]{8, 3, 9, -1, 7, 6, 8, 12, 7, 3, 8};
@@ -230,6 +357,8 @@ public class Level_1 {
         //     System.out.print(val + " ");
         // }
 
-        System.out.print(kpc("123"));
+        printSubsequence("abc", "");
+
+        // System.out.println(printSubsequence(1, 1, 3, 3));
     }
 }
