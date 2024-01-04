@@ -222,7 +222,7 @@ public class Level_1 {
     // he can take [1, 2, 3] steps at a time
     // t(1) = 1
     // t(2) = 1 t(1) + 2 t(2) + 3 t(3)
-    public static ArrayList<String> getStaisPath(int n) {
+    public static ArrayList<String> getStairsPath(int n) {
         if (n <= 0) {
             ArrayList<String> baseAns = new ArrayList<>();
             if (n == 0) {
@@ -233,9 +233,9 @@ public class Level_1 {
             return baseAns;
         }
 
-        ArrayList<String> oneStep = getStaisPath(n - 1);
-        ArrayList<String> twoSteps = getStaisPath(n - 2);
-        ArrayList<String> threeSteps = getStaisPath(n - 3);
+        ArrayList<String> oneStep = getStairsPath(n - 1);
+        ArrayList<String> twoSteps = getStairsPath(n - 2);
+        ArrayList<String> threeSteps = getStairsPath(n - 3);
 
 
         ArrayList<String> ans = new ArrayList<>();
@@ -346,6 +346,139 @@ public class Level_1 {
         printSubsequence(remaing, ans);
     }
 
+    // print keypad combinations
+    public static void printKpc(String s, String ans) {
+        if (s.length() <= 0) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+        char ch = s.charAt(0);
+        String remaining = s.substring(1);
+
+        String code = combi[ch - '0'];
+
+        for (int i = 0; i < code.length(); i++) {
+            printKpc(remaining, ans + code.charAt(i));
+        }
+    }
+
+    // preorder recursion: do current level work and assume for next levels
+    // postorder recursion: have faith that other levels will bring desired result and do work for current level
+
+    public static void printStairPaths(int n, String ans) {
+        if (n < 0) {
+            // not a valid path
+            return;
+        }
+
+        if (n == 0) {
+            // valid path to reach ground
+            System.out.print(ans + " ");
+        }
+        
+        printStairPaths(n - 1, ans + "1");
+        printStairPaths(n - 2, ans + "2");
+        printStairPaths(n - 3, ans + "3");
+    }
+
+    // print maze paths 
+    public static void printMazePaths(int dr, int dc, int sr, int sc, String ans) {
+        if (sr > dr || sc > dc) {
+            return;
+        }
+
+        if (sr == dr && sc == dc) {
+            System.out.print(ans + " ");
+            return;
+        }
+        
+        printMazePaths(dr, dc, sr + 1, sc, ans + 'h');
+        printMazePaths(dr, dc, sr,  sc + 1, ans + 'v');
+    }
+
+    public static void printMazePathsWithJumps(int dr, int dc, int sr, int sc, String ans) {
+        if (sr > dr || sc > dc) {
+            return;
+        }
+
+        if (sr == dr && sc == dc) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+
+        for (int i = 1; sr + i <= dr; i++) {
+            printMazePathsWithJumps(dr, dc, sr + i, sc, ans + "v" + i);
+        }
+
+        for (int j = 1; sc + j <= dc; j++) {
+            printMazePathsWithJumps(dr, dc, sr, sc + j, ans + "h" + j);
+        }
+
+        for (int k = 1; (sc + k <= dc && sr + k <= dr); k++) {
+            printMazePathsWithJumps(dr, dc, sr + k, sc + k, ans + "d" + k);
+        }
+
+    }
+
+
+    /// PERMUTATIONS group
+
+    public static void printPermutations(String s, String ans) {
+        if (s.length() <= 0) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            String left = s.substring(0, i);
+            String right = s.substring(i + 1);
+            printPermutations(left + right, ans + ch);
+        }
+    }
+
+    public static void printEncodings(String s, String ans) {
+        if (s.length() == 0) {
+            System.out.print(ans + " ");
+        } else if (s.length() == 1) {
+            char ch = s.charAt(0);
+            if (ch == '0') {
+                return;
+            } else {
+                // print the corresponding code
+                int chv = ch - '0';
+                char code = (char)('a' + chv - 1);
+                // chv = 2 then code = b: but a + 2 = 3 - 1 = 2;
+                System.out.print(ans + code + " ");
+                return;
+            }
+        } else {
+            char ch = s.charAt(0);
+            String rem = s.substring(1);
+
+            if (ch == '0') {
+                return;
+            } else {
+                // print the corresponding code
+                int chv = ch - '0';
+                char code = (char)('a' + chv - 1);
+                printEncodings(rem, ans + code);
+
+                String ch12 = s.substring(0, 2);
+                String rem2 = s.substring(2);
+
+                int ch12v = Integer.parseInt(ch12);
+
+                if (ch12v <= 26) {
+                    char code12 = (char)('a' + ch12v - 1);
+                    printEncodings(rem2, ans + code12);
+                }
+            }
+        }
+    }
+
     public static void main (String[] args) {
         // int arr[] = new int[]{8, 3, 9, -1, 7, 6, 8, 12, 7, 3, 8};
         // int ans = lastOcc(arr, 0, 8);
@@ -357,7 +490,7 @@ public class Level_1 {
         //     System.out.print(val + " ");
         // }
 
-        printSubsequence("abc", "");
+        printEncodings("123", "");
 
         // System.out.println(printSubsequence(1, 1, 3, 3));
     }
