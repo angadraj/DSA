@@ -479,6 +479,113 @@ public class Level_1 {
         }
     }
 
+    // flood fill
+    public static void floodfill(int[][] arr, int sr, int sc, String ans) {
+        
+        if (sr < 0 || sc < 0 || sr == arr.length || sc == arr[0].length || arr[sr][sc] == 1 || arr[sr][sc] == 2) {
+            return;
+        }
+
+        if (sr == arr.length - 1 && sc == arr[0].length - 1) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+        arr[sr][sc] = 2;
+
+        floodfill(arr, sr - 1, sc, ans + "t");
+        floodfill(arr, sr, sc + 1, ans + "r");
+        floodfill(arr, sr + 1, sc, ans + "d");
+        floodfill(arr, sr, sc - 1, ans + "l");
+        
+        arr[sr][sc] = 0;
+    }
+
+    //////////////////// SUBSET QUESTIONS //////////////////////////////
+ 
+    public static void subsetSumK(int[] arr, int idx, int tar, String ans) {
+        if (idx >= arr.length) {
+            if (tar == 0) {
+                System.out.print(ans + " ");
+            }
+            return;
+        }
+
+        subsetSumK(arr, idx + 1, tar - arr[idx], ans + arr[idx] + " ");
+        subsetSumK(arr, idx + 1, tar, ans);
+
+    } 
+
+    // N Queens
+    public static void nQueens(int[][] arr, int r, String ans) {
+
+        if (r == arr.length) {
+            System.out.print(ans + " ");
+            return;
+        }
+
+        for (int i = 0; i < arr[0].length; i++) {
+            if (isQueenSafe(arr, r, i)) {
+                arr[r][i] = 1;
+                nQueens(arr, r + 1, ans + r + "-" + i + ", ");
+                arr[r][i] = 0;
+            }
+        }
+    }
+
+    public static Boolean isQueenSafe(int[][] arr, int r, int c) {
+        for (int i = r - 1; i >= 0; i--) {
+            if (arr[i][c] == 1) return false;
+        }
+
+        for (int i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if (arr[i][j] == 1) return false;
+        }
+
+        for (int i = r - 1, j = c + 1; i >= 0 && j < arr[0].length; i++, j++) {
+            if (arr[i][j] == 1) return false;
+        }
+
+        return true;
+    }
+
+    //  given n X n chess board and given start point then print all ways in which it will travel all boxes
+    // without visiting any cells twice
+
+    public static void knightPaths(int[][] arr, int r, int c, int move) {
+        if (r < 0 || c < 0 || r >= arr.length || c >= arr[0].length || arr[r][c] > 0) {
+            return;
+        }
+
+        if (move == (arr.length * arr[0].length)) {
+            arr[r][c] = move;
+            for (int i = 0; i < arr.length; i++) {
+                for (int j = 0; j < arr[0].length; j++) {
+                    System.out.print(arr[i][j] + " ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+            arr[r][c] = 0;
+            return;
+        }
+        
+        arr[r][c] = move;
+
+        knightPaths(arr, r - 2, c + 1, move + 1);
+        knightPaths(arr, r - 1, c + 2, move + 1);
+        knightPaths(arr, r + 1, c + 2, move + 1);
+        knightPaths(arr, r + 2, c + 1, move + 1);
+        knightPaths(arr, r + 2, c - 1, move + 1);
+        knightPaths(arr, r + 1, c - 2, move + 1);
+        knightPaths(arr, r - 1, c - 2, move + 1);
+        knightPaths(arr, r - 2, c - 1, move + 1);
+
+        arr[r][c] = 0;
+
+    }
+
+
     public static void main (String[] args) {
         // int arr[] = new int[]{8, 3, 9, -1, 7, 6, 8, 12, 7, 3, 8};
         // int ans = lastOcc(arr, 0, 8);
@@ -490,7 +597,8 @@ public class Level_1 {
         //     System.out.print(val + " ");
         // }
 
-        printEncodings("123", "");
+        int[][] arr = new int[5][5];
+        knightPaths(arr, 2, 2, 1);
 
         // System.out.println(printSubsequence(1, 1, 3, 3));
     }
