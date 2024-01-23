@@ -202,8 +202,217 @@ class Level_2 {
         return true;
     }
 
+    // cross word puzzle
+    public static void crossWord () {
+        char[][] arr = {{'+', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+                        {'-', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+                        {'-', '-', '-', '-', '-', '-', '-', '+', '+', '-'},
+                        {'-', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+                        {'-', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+                        {'-', '+', '+', '+', '+', '-', '-', '-', '-', '-'},
+                        {'-', '-', '-', '-', '-', '-', '+', '+', '+', '-'},
+                        {'-', '+', '+', '+', '+', '+', '+', '+', '+', '-'},
+                        {'+', '-', '-', '-', '-', '-', '-', '-', '-', '-'},
+                        {'+', '+', '+', '+', '+', '+', '+', '+', '+', '+'},
+                    };
+        String w[] = {"HISTORY", "CHEMISTRY", "PHYSICS", "CIVICS", "MATHS", "GEOGRAPHY"};
+        crossWordHelper(arr, w, 0);
+    }
+
+    public static void crossWordHelper(char[][] arr, String[] w, int idx) {
+        if (idx >= w.length) {
+            for (char[] c: arr) {
+                for (char val: c) {
+                    System.out.print(val + " ");
+                }
+                System.out.println();
+            }
+            return;
+        }
+
+        String word = w[idx];
+
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+
+                if (arr[i][j] == '-' || arr[i][j] == word.charAt(0)) {
+
+                    if (canPlaceHorizontally(arr, word, i, j)) {
+                        boolean[] placedH = placeHorizontally(arr, word, i, j);
+                        crossWordHelper(arr, w, idx + 1);
+                        removeHorizontally(arr, placedH, i, j);
+                    }
+
+                    if (canPlaceVertically(arr, word, i, j)) {
+                        boolean[] placedV = placeVertically(arr, word, i, j);
+                        crossWordHelper(arr, w, idx + 1);
+                        removeVertically(arr, placedV, i, j);
+                    }
+
+                }
+            }
+        }
+    }
+
+    public static boolean canPlaceHorizontally(char[][] arr, String w, int i, int j) {
+        if (j - 1 >= 0 && arr[i][j - 1] != '+') {
+            // it doesn't fits on top
+            return false;
+        } else if (j + w.length() < arr[0].length && arr[i][j + w.length()] != '+') {
+            // it doesn't fits on bottom
+            return false;
+        }
+
+        for (int x = 0; x < w.length(); x++) {
+            if (x + j >=  arr[0].length) {
+                // technically this case should not hit
+                return false;
+            }
+
+            if (arr[i][x + j] == '-' || arr[i][x + j] == w.charAt(x)) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean[] placeHorizontally(char[][] arr, String w, int i, int j) {
+        boolean[] placed = new boolean[w.length()];
+        for (int x = 0; x < w.length(); x++) {
+            if (arr[i][x + j] == '-') {
+                arr[i][x + j] = w.charAt(x);
+                placed[x] = true;
+            }
+        }
+        return placed;
+    }
+
+    public static void removeHorizontally(char[][] arr, boolean[] placed, int i, int j) {
+        for (int x = 0; x < placed.length; x++) {
+            if (placed[x]) {
+                arr[i][x + j] = '-';
+            }
+        }
+    }
+
+    public static boolean canPlaceVertically(char[][] arr, String w, int i, int j) {
+        if (i - 1 >= 0 && arr[i - 1][j] != '+') {
+            return false;
+        } else if (i + w.length() < arr.length && arr[i + w.length()][j] != '+') {
+            return false;
+        }
+
+        for (int y = 0; y < w.length(); y++) {
+            if (y + i >= arr.length) {
+                // technically this case should not hit
+                return false;
+            }
+
+            if (arr[y + i][j] == '-' || arr[y + i][j] == w.charAt(y)) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean[] placeVertically(char[][] arr, String w, int i, int j) {
+        boolean[] placed = new boolean[w.length()];
+        for (int y = 0; y < w.length(); y++) {
+            if (arr[i + y][j] == '-') {
+                arr[i + y][j] = w.charAt(y);
+                placed[y] = true;
+            }
+        }
+        return placed;
+    }
+
+    public static void removeVertically(char[][] arr, boolean[] placed, int i, int j) {
+        for (int y = 0; y < placed.length; y++) {
+            if (placed[y]) {
+                arr[i + y][j] = '-';
+            }
+        }
+    }
+
+    // crypto
+    public static void crypto() {
+        String p = "send";
+        String q = "more";
+        String r = "money";
+        HashMap<Character, Integer> map = new HashMap<>();
+        String us = "";
+        
+        us += giveUniqueString(map, p);
+        us += giveUniqueString(map, q);
+        us += giveUniqueString(map, r);
+
+        System.out.println(map);
+
+        boolean[] usedNum = new boolean[10];
+        cryptoHelper(map, usedNum, us, p, q, r, 0);
+    }
+
+    public static String giveUniqueString(HashMap<Character, Integer> map, String s) {
+        String us = "";
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (!map.containsKey(ch)) {
+                map.put(ch, -1);
+                us += ch;
+            }
+        }
+        return us;
+    }
+
+    public static int getNum(HashMap<Character, Integer> map, String s) {
+        String num = "";
+        for (int i = 0; i < s.length(); i++) {
+            num += map.get(s.charAt(i));
+        }
+        return Integer.parseInt(num);
+    }
+
+    public static void cryptoHelper(HashMap<Character, Integer> map, boolean[] num, String u, String p, String q, String r, int idx) {
+        if (idx >= u.length()) {
+            int a = getNum(map, p);
+            int b = getNum(map, q);
+            int c = getNum(map, r);
+
+            if (a + b == c) {
+                for (int i = 0; i < 26; i++) {
+                    char ch = (char)('a' + i);
+                    if (map.containsKey(ch)) {
+                        System.out.print(ch + " - " + map.get(ch) + " ");
+                    }
+                }
+                System.out.println();
+            }
+            return;
+        }
+
+        char ch = u.charAt(idx);
+
+        for (int i = 0; i < 10; i++) {
+            if (!num[i]) {
+                map.put(ch, i);
+                num[i] = true;
+
+                cryptoHelper(map, num, u, p, q, r, idx + 1);
+
+                map.put(ch, -1);
+                num[i] = false;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         // System.out.println(josephus(5, 3));
-        sudoku();
+        crypto();
     }
 }
